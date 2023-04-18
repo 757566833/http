@@ -1,6 +1,6 @@
 use std::{
     io::Write,
-    net::{TcpListener, TcpStream}, thread
+    net::{TcpListener, TcpStream}
 };
 mod constant;
 mod pool;
@@ -21,10 +21,10 @@ fn handle_connection(mut stream: TcpStream) {
         } else {
             response = strify_response(StatusCode::NotFound, "");
         }
-        stream.write_all(response.as_bytes()).unwrap();
+        let _ = stream.write_all(response.as_bytes());
     } else {
         let response = strify_response(StatusCode::BadRequest, "");
-        stream.write_all(response.as_bytes()).unwrap();
+        let _ = stream.write_all(response.as_bytes());
     }
 }
 fn main() {
@@ -41,11 +41,10 @@ fn main() {
     // 默认返回的response
 
     for stream_result in listener.incoming() {
-        if let Ok(mut stream) = stream_result {
-            // thread::spawn();
-            pool.execute(|| {
+        if let Ok(stream) = stream_result {
+            pool.execute(||{
                 handle_connection(stream);
-            });
+            })
         }
     }
 }
